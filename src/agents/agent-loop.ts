@@ -1,9 +1,9 @@
 import type { MessageParam, ToolUnion } from "@anthropic-ai/sdk/resources";
 import type Anthropic from "@anthropic-ai/sdk";
-import { toolProvider } from "../tools/index.js";
+import { toolProviderParent } from "../tools/index.js";
 import { print, cutContent } from "../utils/print.js";
 
-export async function agentLoop(messages: MessageParam[], client: Anthropic, model: string, systemPrompt: string, tools: ToolUnion[]): Promise<void> {
+export async function agentLoop(messages: MessageParam[], client: Anthropic, model: string, systemPrompt: string): Promise<void> {
     let roundsSinceTodo = 0
     while (true) {
         let usedTodo = false;
@@ -12,10 +12,9 @@ export async function agentLoop(messages: MessageParam[], client: Anthropic, mod
             model: model,
             system: systemPrompt,
             messages: messages,
-            tools: tools,
+            tools: toolProviderParent.getToolDefinitions(),
             max_tokens: 8000
         });
-
         messages.push({ role: "assistant", content: response.content });
 
         if (response.stop_reason !== "tool_use") break;
@@ -30,25 +29,19 @@ export async function agentLoop(messages: MessageParam[], client: Anthropic, mod
             if (block.type === "tool_use") {
                 let output: string;
 
-                const toolHandler = toolProvider.getToolHandler(block.name);
-                if (!toolHandler) {
-                    output = `[ERROR] Tool "${block.name}" does not exist. Available tools: ${toolProvider.listAllToolNames()}`;
-                    print(output, "error");
-                } else {
-                    // execute tool
+                try {
+                    const handler = toolProviderParent.getToolHandler(block.name);
                     print(`running tool: ${block.name}`, "tool");
                     print(cutContent(JSON.stringify(block.input)), "tool");
-                    try {
-                        output = toolHandler(block.input);
-                        print(`result:\n${cutContent(output)}`, "tool");
-                    } catch (error) {
-                        if (error instanceof Error && error.stack) {
-                            output = `[ERROR] ${error.stack}`;
-                        } else {
-                            output = `[ERROR] ${block.name}: ${String(error)}`;
-                        }
-                        print(output, "error");
+                    output = await handler(block.input);
+                    print(`result:\n${cutContent(output)}`, "tool");
+                } catch (error) {
+                    if (error instanceof Error && error.stack) {
+                        output = `[ERROR] ${error.stack}`;
+                    } else {
+                        output = `[ERROR] ${block.name}: ${String(error)}`;
                     }
+                    print(output, "error");
                 }
 
                 // build results

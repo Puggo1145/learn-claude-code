@@ -1,55 +1,29 @@
-import type { Tool as AnthropicToolDef } from "@anthropic-ai/sdk/resources";
 import { bashTool } from "./bash.js";
 import { readTool } from "./read.js";
 import { writeTool } from "./write.js";
 import { editTool } from "./edit.js";
 import { todoTool } from "./todo.js";
+import { taskTool } from "./task.js";
+import { toolProviderParent, toolProviderChild } from "./tool-provider.js";
+import type { ToolSet } from "./tool-provider.js";
 
-export type ToolName = string;
-export type ToolDef = AnthropicToolDef;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ToolHandler = (input: any) => string;
-
-interface Tool {
-    definition: ToolDef;
-    handler: ToolHandler
+const BASE_TOOLS: ToolSet = {
+    "bash": bashTool,
+    "read": readTool,
+    "write": writeTool,
+    "edit": editTool,
+}
+const PARENT_TOOLS: ToolSet = {
+    ...BASE_TOOLS,
+    "todo": todoTool,
+    "task": taskTool
 }
 
-class ToolProvider {
-    private tools: Record<ToolName, Tool>;
+// tools for parent agent
+toolProviderParent.register(PARENT_TOOLS);
 
-    constructor() {
-        this.tools = {};
-    }
+// tools for child agent
+toolProviderChild.register(BASE_TOOLS);
 
-    register(
-        toolName: ToolName,
-        tool: Tool
-    ) {
-        this.tools[toolName] = tool;
-    }
-
-    getToolHandler(toolName: string): ToolHandler | null {
-        if (!(toolName in this.tools)) return null;
-
-        // return tool handler
-        return this.tools[toolName]!.handler;
-    }
-
-    getToolDefinitions(): Array<Tool["definition"]> {
-        return Object.values(this.tools).map(tool => tool.definition);
-    }
-
-    listAllToolNames(): string {
-        return Object.keys(this.tools).join(", ");
-    }
-}
-
-const toolProvider = new ToolProvider();
-toolProvider.register("bash", bashTool);
-toolProvider.register("read", readTool);
-toolProvider.register("write", writeTool);
-toolProvider.register("edit", editTool);
-toolProvider.register("todo", todoTool);
-
-export { toolProvider };
+export { toolProviderParent, toolProviderChild };
+export type { ToolDef, ToolHandler, Tool } from "./tool-provider.js";

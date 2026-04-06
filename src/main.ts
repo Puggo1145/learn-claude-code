@@ -1,7 +1,6 @@
-import type { MessageParam, ToolUnion } from "@anthropic-ai/sdk/resources";
+import type { MessageParam } from "@anthropic-ai/sdk/resources";
 import "dotenv/config";
-import Anthropic from "@anthropic-ai/sdk";
-import { toolProvider } from "./tools/index.js";
+import client from "./agents/client.js";
 
 function getModel() {
     const MODEL = process.env.MODEL;
@@ -14,14 +13,9 @@ function getModel() {
 const SYSTEM_PROMPT = `You are a coding agent at ${process.cwd()}. 
 Use the todo tool to plan for multi-step tasks at the first
 Prefer tool over prose.`;
-const TOOLS: ToolUnion[] = toolProvider.getToolDefinitions();
 
 import { createInterface } from "node:readline/promises";
 import { agentLoop } from "./agents/agent-loop.js";
-
-const client = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY
-});
 
 const model = getModel();
 
@@ -35,7 +29,7 @@ async function main() {
             break;
         }
         messages.push({ role: "user", content: query });
-        await agentLoop(messages, client, model, SYSTEM_PROMPT, TOOLS);
+        await agentLoop(messages, client, model, SYSTEM_PROMPT);
         const responseContent = messages[messages.length - 1]?.content;
         if (Array.isArray(responseContent)) {
             for (const block of responseContent) {

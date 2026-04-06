@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { toolProvider } from "../../src/tools/index.js";
+import { toolProviderParent as toolProvider } from "../../src/tools/index.js";
 import crypto from "node:crypto";
 
-const EXPECTED_TOOLS = ["bash", "read", "write", "edit", "todo"];
+const EXPECTED_TOOLS = ["bash", "read", "write", "edit", "todo", "task"];
 
 describe("ToolProvider", () => {
     describe("getToolDefinitions", () => {
@@ -29,9 +29,9 @@ describe("ToolProvider", () => {
             }
         });
 
-        it("returns null for a random unregistered name", () => {
+        it("throws for a random unregistered name", () => {
             const fake = `__no_tool_${crypto.randomBytes(4).toString("hex")}`;
-            expect(toolProvider.getToolHandler(fake)).toBeNull();
+            expect(() => toolProvider.getToolHandler(fake)).toThrow();
         });
     });
 
