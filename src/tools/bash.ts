@@ -61,7 +61,13 @@ function handler({ command, timeout = 10000 }: { command: string; timeout?: numb
     }
 }
 
+function formatCall(input: unknown): string {
+    const cmd = (input as Record<string, unknown>)?.command;
+    return typeof cmd === "string" ? `Bash(${cmd})` : `Bash(${JSON.stringify(input)})`;
+}
+
 export const bashTool = {
     definition,
-    handler
+    handler,
+    formatCall
 };

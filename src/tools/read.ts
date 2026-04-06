@@ -73,7 +73,18 @@ Your current working directory is: ${process.cwd()}`);
 ${numbered.join("\n")}${suffix}`;
 }
 
+function formatCall(input: unknown): string {
+    const obj = input as Record<string, unknown>;
+    const p = obj?.path;
+    if (typeof p !== "string") return `Read(${JSON.stringify(input)})`;
+    const range = typeof obj.from === "number" || typeof obj.to === "number"
+        ? ` [${obj.from ?? 0}:${obj.to ?? "end"}]`
+        : "";
+    return `Read(${p}${range})`;
+}
+
 export const readTool = {
     definition,
     handler,
+    formatCall,
 };

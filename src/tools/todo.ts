@@ -117,7 +117,20 @@ class TodoManager {
 
 const todoManager = new TodoManager();
 
+function formatCall(input: unknown): string {
+    const obj = input as Record<string, unknown>;
+    const items = obj?.items;
+    if (!Array.isArray(items)) return `Todo(${JSON.stringify(input)})`;
+    const summary = items.map((it) => {
+        const status = it?.status ?? "?";
+        const text = typeof it?.text === "string" ? it.text : "?";
+        return `${status}: ${text}`;
+    }).join(", ");
+    return `Todo(${items.length} items: ${summary})`;
+}
+
 export const todoTool = {
     handler: ({ items }: { items: UnvalidatedTodoItem[] }) => todoManager.update(items),
-    definition
+    definition,
+    formatCall
 };

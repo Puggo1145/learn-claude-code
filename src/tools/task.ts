@@ -16,7 +16,15 @@ const definition: ToolDef = {
 };
 
 const handler = runSubAgent;
+function formatCall(input: unknown): string {
+    const prompt = (input as Record<string, unknown>)?.prompt;
+    if (typeof prompt !== "string") return `Task(${JSON.stringify(input)})`;
+    const short = prompt.length > 80 ? prompt.slice(0, 77) + "..." : prompt;
+    return `Task(${short})`;
+}
+
 export const taskTool = {
     definition,
-    handler
+    handler,
+    formatCall
 };

@@ -63,7 +63,13 @@ Your current working directory is: ${process.cwd()}`);
     return `Successfully edited ${filePath} (${lineCount} lines)`;
 }
 
+function formatCall(input: unknown): string {
+    const p = (input as Record<string, unknown>)?.path;
+    return typeof p === "string" ? `Edit(${p})` : `Edit(${JSON.stringify(input)})`;
+}
+
 export const editTool = {
     definition,
     handler,
+    formatCall,
 };

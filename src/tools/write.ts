@@ -42,7 +42,13 @@ Your current working directory is: ${process.cwd()}`);
     return `Successfully wrote to ${filePath} (${lineCount} lines)`;
 }
 
+function formatCall(input: unknown): string {
+    const p = (input as Record<string, unknown>)?.path;
+    return typeof p === "string" ? `Write(${p})` : `Write(${JSON.stringify(input)})`;
+}
+
 export const writeTool = {
     definition,
     handler,
+    formatCall,
 };

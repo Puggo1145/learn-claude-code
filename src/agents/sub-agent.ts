@@ -1,4 +1,5 @@
-import type { MessageParam, Model } from "@anthropic-ai/sdk/resources"
+import type { MessageParam } from "@anthropic-ai/sdk/resources"
+import { print } from "../utils/print.js";
 import client from "./client.js"
 import { toolProviderChild } from "../tools/tool-provider.js";
 
@@ -37,6 +38,7 @@ export async function runSubAgent({ prompt }: IRunSubAgent): Promise<string> {
                 let output: string;
                 try {
                     const handler = toolProviderChild.getToolHandler(block.name);
+                    print(toolProviderChild.formatToolCall(block.name, block.input), "tool");
                     output = await handler(block.input);
                 } catch (error) {
                     if (error instanceof Error && error.stack) {

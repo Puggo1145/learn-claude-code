@@ -31,8 +31,7 @@ export async function agentLoop(messages: MessageParam[], client: Anthropic, mod
 
                 try {
                     const handler = toolProviderParent.getToolHandler(block.name);
-                    print(`running tool: ${block.name}`, "tool");
-                    print(cutContent(JSON.stringify(block.input)), "tool");
+                    print(cutContent(toolProviderParent.formatToolCall(block.name, block.input)));
                     output = await handler(block.input);
                     print(`result:\n${cutContent(output)}`, "tool");
                 } catch (error) {

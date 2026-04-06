@@ -26,4 +26,4 @@ toolProviderParent.register(PARENT_TOOLS);
 toolProviderChild.register(BASE_TOOLS);
 
 export { toolProviderParent, toolProviderChild };
-export type { ToolDef, ToolHandler, Tool } from "./tool-provider.js";
+export type { ToolDef, ToolHandler, ToolFormatter, Tool } from "./tool-provider.js";
