@@ -4,6 +4,7 @@ import { writeTool } from "./write.js";
 import { editTool } from "./edit.js";
 import { todoTool } from "./todo.js";
 import { taskTool } from "./task.js";
+import { skillTool } from "./skill-tool.js";
 import { toolProviderParent, toolProviderChild } from "./tool-provider.js";
 import type { ToolSet } from "./tool-provider.js";
 
@@ -16,7 +17,8 @@ const BASE_TOOLS: ToolSet = {
 const PARENT_TOOLS: ToolSet = {
     ...BASE_TOOLS,
     "todo": todoTool,
-    "task": taskTool
+    "task": taskTool,
+    "skill": skillTool,
 }
 
 // tools for parent agent

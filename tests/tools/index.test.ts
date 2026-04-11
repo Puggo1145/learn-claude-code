@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { toolProviderParent as toolProvider } from "../../src/tools/index.js";
 import crypto from "node:crypto";
 
-const EXPECTED_TOOLS = ["bash", "read", "write", "edit", "todo", "task"];
+const EXPECTED_TOOLS = ["bash", "read", "write", "edit", "todo", "task", "skill"];
 
 describe("ToolProvider", () => {
     describe("getToolDefinitions", () => {
